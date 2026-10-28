@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-account
+      author: andrejs.krilovs
+      changes:
+        # increment must match allocationSize of the @SequenceGenerator in Account
+        - createSequence:
+            sequenceName: account_seq
+            startValue: 1
+            incrementBy: 1
+        - createTable:
+            tableName: account
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: customer_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: bank_account_number
+                  type: VARCHAR(35)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: balance
+                  type: NUMERIC(12, 2)
+                  constraints:
+                    nullable: false
+              # ISO 4217 code, see CurrencyConverter
+              - column:
+                  name: currency
+                  type: VARCHAR(3)
+                  constraints:
+                    nullable: false

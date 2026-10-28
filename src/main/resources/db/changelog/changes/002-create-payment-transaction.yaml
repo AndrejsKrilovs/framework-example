@@ -1,0 +1,71 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-payment-transaction
+      author: andrejs.krilovs
+      changes:
+        # increment must match allocationSize of the @SequenceGenerator in PaymentTransaction
+        - createSequence:
+            sequenceName: payment_transaction_seq
+            startValue: 1
+            incrementBy: 1
+        - createTable:
+            tableName: payment_transaction
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: source_account
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_payment_transaction_source_account
+                    references: account(id)
+              - column:
+                  name: destination_account
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_payment_transaction_destination_account
+                    references: account(id)
+              - column:
+                  name: amount
+                  type: NUMERIC(12, 2)
+                  constraints:
+                    nullable: false
+              # ISO 4217 code, see CurrencyConverter
+              - column:
+                  name: currency
+                  type: VARCHAR(3)
+                  constraints:
+                    nullable: false
+              # PaymentTransactionStatus, stored by name
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: error_message
+                  type: VARCHAR(500)
+        # Postgres does not index foreign keys on its own
+        - createIndex:
+            tableName: payment_transaction
+            indexName: idx_payment_transaction_source_account
+            columns:
+              - column:
+                  name: source_account
+        - createIndex:
+            tableName: payment_transaction
+            indexName: idx_payment_transaction_destination_account
+            columns:
+              - column:
+                  name: destination_account

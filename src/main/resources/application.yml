@@ -1,0 +1,32 @@
+app:
+  base_package: krilovs.andrejs.app
+  date_time: yyyy-MM-dd HH:mm:ss
+transaction:
+  node_identifier: payment-service
+  # Narayana transaction log; under logs/ so it stays out of git
+  object_store_dir: logs/narayana
+server:
+  port: 8089
+database:
+  driver: org.postgresql.Driver
+  url: jdbc:postgresql://localhost:5432/payment
+  username: payment
+  password: payment
+  pool:
+    maximum_size: 10
+    minimum_idle: 2
+    connection_timeout: 30000
+    idle_timeout: 600000
+    max_lifetime: 1800000
+logging:
+  sql:
+    level: debug
+    show-params: true
+  console:
+    level: info
+    pretty_print: true
+  file:
+    level: info
+    directory: logs
+    pretty_print: true
+    max_history_hours: 168

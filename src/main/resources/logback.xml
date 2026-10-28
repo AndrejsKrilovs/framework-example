@@ -1,0 +1,33 @@
+<configuration>
+  <!-- keeps the java.util.logging bridge cheap for disabled levels -->
+  <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator"/>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- every other log line is JSON too, one object per line, same as wide events -->
+    <encoder class="krilovs.andrejs.framework.config.logging.ReadableTimeJsonEncoder">
+      <pretty>${logging.console.pretty_print}</pretty>
+    </encoder>
+  </appender>
+
+  <!-- new file every hour: logs/app.20261021_4.log; maxHistory counts hours (168 = 7 days) -->
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${logging.file.directory}/app.%d{yyyyMMddHH}.log</fileNamePattern>
+      <maxHistory>${logging.file.max_history_hours}</maxHistory>
+    </rollingPolicy>
+    <encoder class="krilovs.andrejs.framework.config.logging.ReadableTimeJsonEncoder">
+      <pretty>${logging.file.pretty_print}</pretty>
+    </encoder>
+  </appender>
+
+  <!-- executed SQL, like org.hibernate.SQL; bind values are not printed -->
+  <logger name="org.eclipse.persistence.sql" level="${logging.sql.level}"/>
+  <logger name="org.eclipse.persistence" level="warn"/>
+
+  <root level="${logging.console.level}">
+    <appender-ref ref="STDOUT"/>
+  </root>
+  <root level="${logging.file.level}">
+    <appender-ref ref="FILE"/>
+  </root>
+</configuration>
