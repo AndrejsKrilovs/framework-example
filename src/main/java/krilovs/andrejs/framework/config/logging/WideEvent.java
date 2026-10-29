@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * One context-rich event per request ("canonical log line").
@@ -18,7 +19,6 @@ public final class WideEvent {
     private static final String INTERNAL_EXCEPTION = "Internal Exception: ";
     // "org.postgresql.util.PSQLException: ERROR: " in front of the actual text
     private static final String DRIVER_PREFIX = "^[\\w.$]+Exception: (ERROR: )?";
-    private static final boolean SHOW_PARAMS = Boolean.parseBoolean(PropertiesConfig.get("logging.sql.show-params"));
 
     private final Map<String, Object> fields = new LinkedHashMap<>();
     private final Map<String, Map<String, Object>> groups = new HashMap<>();
@@ -37,7 +37,7 @@ public final class WideEvent {
     /** Never null: outside a request (tests, startup) enrichment goes to a throwaway event. */
     public static WideEvent current() {
         var event = CURRENT.get();
-        return event != null ? event : new WideEvent();
+        return Objects.nonNull(event) ? event : new WideEvent();
     }
 
     public WideEvent put(String key, Object value) {
@@ -59,7 +59,7 @@ public final class WideEvent {
     public void error(Throwable t) {
         failed = true;
         var message = t.getLocalizedMessage();
-        if (message == null) {
+        if (Objects.isNull(message)) {
             put("message", null);
             return;
         }
@@ -90,11 +90,11 @@ public final class WideEvent {
         }
 
         // a database failure: keep just the driver's text, without EclipseLink's header, Detail (row values) and Error Code
-        put("message", cause != null ? cause : rest.toString());
+        put("message", Objects.nonNull(cause) ? cause : rest.toString());
         if (sql != null) {
             put("sql", sql);
-            if (SHOW_PARAMS) {
-                put("params", params == null ? List.of() : params);
+            if (Boolean.parseBoolean(PropertiesConfig.get("logging.sql.show-params"))) {
+                put("params", Objects.nonNull(params) ? List.of() : params);
             }
         }
     }

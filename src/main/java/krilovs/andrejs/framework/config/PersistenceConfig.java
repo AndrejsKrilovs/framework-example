@@ -41,7 +41,7 @@ public class PersistenceConfig {
 
     public static EntityManagerFactory createEntityManagerFactory(DataSource dataSource) {
         var properties = Map.of(
-                PersistenceUnitProperties.WEAVING, "true",
+                PersistenceUnitProperties.WEAVING, "false",
                 PersistenceUnitProperties.LOGGING_LOGGER, PersistenceSessionLog.class.getName(),
                 PersistenceUnitProperties.LOGGING_LEVEL, SessionLog.ALL_LABEL,
                 PersistenceUnitProperties.LOGGING_PARAMETERS, PropertiesConfig.get("logging.sql.show-params"),

@@ -1,10 +1,6 @@
 app:
   base_package: krilovs.andrejs.app
   date_time: yyyy-MM-dd HH:mm:ss
-transaction:
-  node_identifier: payment-service
-  # Narayana transaction log; under logs/ so it stays out of git
-  object_store_dir: logs/narayana
 server:
   port: 8089
 database:
@@ -18,6 +14,10 @@ database:
     connection_timeout: 30000
     idle_timeout: 600000
     max_lifetime: 1800000
+  transaction:
+    node_identifier: payment-service
+    # Narayana transaction log; under logs/ so it stays out of git
+    object_store_dir: logs/narayana
 logging:
   sql:
     level: debug
