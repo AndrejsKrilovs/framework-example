@@ -2,13 +2,10 @@ package krilovs.andrejs.framework.exception;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
-import krilovs.andrejs.framework.config.logging.WideEvent;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -27,15 +24,7 @@ public class JsonMappingExceptionResponse implements ExceptionMapper<JsonMapping
                 ? format.getTargetType().getSimpleName()
                 : null;
         var message = Objects.isNull(type) ? "Invalid value" : "Invalid %s value".formatted(type);
-
-        var event = WideEvent.current();
-        event.put("validation", "failed_fields", List.of(field));
-        event.put("validation", "reason", message);
-
-        return Response.status(Response.Status.BAD_REQUEST)
-                .type(MediaType.APPLICATION_JSON_TYPE)
-                .entity(ApiExceptionResponse.validation("Validation failed", Map.of(field, message)))
-                .build();
+        return ValidationFailure.response(Map.of(field, message));
     }
 
     private static String lastFieldName(JsonMappingException e) {

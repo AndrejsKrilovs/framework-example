@@ -40,6 +40,7 @@ public class ReadableTimeJsonEncoder extends JsonEncoder {
         setWithMessage(false);
         setWithFormattedMessage(true);
         setWithArguments(false);
+        setWithThrowable(false);
     }
 
     @Override
@@ -76,7 +77,8 @@ public class ReadableTimeJsonEncoder extends JsonEncoder {
                     PRETTY.writeValueAsString(tree),
                     System.lineSeparator()
             ).getBytes(StandardCharsets.UTF_8);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             return json;
         }
     }
@@ -89,9 +91,9 @@ public class ReadableTimeJsonEncoder extends JsonEncoder {
         }
         try {
             tree.set(MESSAGE_FIELD, MAPPER.readTree(message.asText()));
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             // not JSON after all, keep the plain string
         }
     }
-
 }

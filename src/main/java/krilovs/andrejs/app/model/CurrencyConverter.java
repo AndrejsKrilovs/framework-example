@@ -16,6 +16,12 @@ public class CurrencyConverter implements AttributeConverter<Currency, String> {
 
     @Override
     public Currency convertToEntityAttribute(String code) {
-        return Objects.isNull(code) ? null : Currency.getInstance(code);
+        try {
+            return Objects.isNull(code) ? null : Currency.getInstance(code);
+        }
+        catch (Exception e) {
+            IO.println(e);
+            throw e;
+        }
     }
 }

@@ -14,6 +14,8 @@ import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
  * so a new controller or mapper needs no registration.
  */
 public class AppControllerConfig extends ResourceConfig {
+    // outside app.base_package, but holds providers that must be registered: exception mappers, TransactionFeature
+    private static final String FRAMEWORK_PACKAGE = "krilovs.andrejs.framework";
 
     public AppControllerConfig(EntityManagerFactory entityManagerFactory,
                                ApplicationLifecycle lifecycle,
@@ -25,7 +27,7 @@ public class AppControllerConfig extends ResourceConfig {
         register(RolesAllowedDynamicFeature.class);
 
         try (var scan = new ClassGraph()
-                .acceptPackages(PropertiesConfig.get("app.base_package"))
+                .acceptPackages(PropertiesConfig.get("app.base_package"), FRAMEWORK_PACKAGE)
                 .enableAnnotationInfo()
                 .scan()) {
             var resources = scan.getClassesWithAnnotation(Path.class);

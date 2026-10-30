@@ -5,10 +5,12 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 
 @Path("/api/v1/account")
@@ -21,9 +23,15 @@ public class AccountController {
 
     @POST
     @Transactional(value = Transactional.TxType.REQUIRED)
-    public Account createAccount(@Valid AccountRequest accountRequest) {
+    public Response createAccount(@Valid AccountRequest accountRequest) {
         var account = accountMapper.toEntity(accountRequest);
         entityManager.persist(account);
-        return account;
+        return Response.accepted(account).build();
+    }
+
+    @GET
+    public Response listAccounts() {
+        var accounts = entityManager.createQuery("select a from Account a").getResultList();
+        return Response.ok(accounts).build();
     }
 }
